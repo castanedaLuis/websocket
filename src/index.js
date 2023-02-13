@@ -18,11 +18,14 @@ app.get('/', (req, res) =>{
 
 
 io.on('connection',(socket) =>{
-    //console.log('Clients connected: '+ io.engine.clientsCount);
-    //console.log('ID del socket connected:',socket.id);
-    socket.conn.once('upgrade', () =>{
-        console.log('Hemos pasado de http Long-Polling a', socket.conn.transport.name);
+    //Emisión basica
+    socket.emit('Welcomen', 'Ahora estas conectado ✅');
+    socket.on('server', data =>{
+        console.log(data);
     })
+
+    //Emisión a todos
+    io.emit('everyone', socket.id + 'Se ha conectado ');
 })
 
 httpServer.listen(port, () => console.log(`Listening on: http://localhost:${port}`))

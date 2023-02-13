@@ -1,29 +1,20 @@
 const socket = io();
 
 
-function checkSocketStatus(){
-    console.log(`Estado del socket ${socket.connected}`);
-}
 
-socket.on("connect_error", () => {
-    console.log('The socket can not connect❌:');
-  });
+socket.on('Welcomen', (data) =>{
+    //console.log(data);
+    const p = document.getElementById('text');
+    p.textContent =data;
+})
 
-socket.on('connect', () =>{
-    console.log('The socket been connected:', socket.id);
-    checkSocketStatus();
-});
 
-socket.on('disconnect', () =>{
-    console.log('The socket been disconnected:', socket.id);
-    checkSocketStatus();
-});
+const btn = document.querySelector('#btn-server');
+btn.addEventListener('click',()=>{
+    socket.emit('server', 'Hola servidor 💻');
+})
 
-socket.io.on("reconnect_attempt", () => {
-    console.log('The socket be try connect 🕣:');
-});
 
-socket.io.on("reconnect", () => {
-    console.log('I been  connect ✅:');
-  });
-  
+socket.on('everyone', message =>{
+    console.log(message);
+})
