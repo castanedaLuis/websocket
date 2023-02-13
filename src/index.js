@@ -10,6 +10,8 @@ const app = express();
 const httpServer = createServer(app);
 const io = new Server(httpServer);
 
+const socketsOnline = [];
+
 app.use(express.static(path.join(__dirname, '/views')));
 
 app.get('/', (req, res) =>{
@@ -18,6 +20,10 @@ app.get('/', (req, res) =>{
 
 
 io.on('connection',(socket) =>{
+
+    //Guardamos todos los sockets que se unan
+    socketsOnline.push(socket.id);
+
     //Emisión basica
     socket.emit('Welcomen', 'Ahora estas conectado ✅');
     socket.on('server', data =>{
@@ -26,6 +32,13 @@ io.on('connection',(socket) =>{
 
     //Emisión a todos
     io.emit('everyone', socket.id + 'Se ha conectado ');
+
+    //Emisión a uno solo 
+    socket.on('last', data =>{
+        const lastSocket = socketsOnline.at(-1); //Ultimo elemento
+        io.to(lastSocket).emit("saludo", data); 
+    });
+
 })
 
 httpServer.listen(port, () => console.log(`Listening on: http://localhost:${port}`))
