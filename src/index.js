@@ -21,24 +21,10 @@ app.get('/', (req, res) =>{
 
 io.on('connection',(socket) =>{
 
-    //Guardamos todos los sockets que se unan
-    socketsOnline.push(socket.id);
-
-    //Emisión basica
-    socket.emit('Welcomen', 'Ahora estas conectado ✅');
-    socket.on('server', data =>{
-        console.log(data);
-    })
-
-    //Emisión a todos
-    io.emit('everyone', socket.id + 'Se ha conectado ');
-
-    //Emisión a uno solo 
-    socket.on('last', data =>{
-        const lastSocket = socketsOnline.at(-1); //Ultimo elemento
-        io.to(lastSocket).emit("saludo", data); 
+    socket.on('circle position', (position) =>{
+        socket.broadcast.emit('move circle', position);
     });
 
-})
+});
 
 httpServer.listen(port, () => console.log(`Listening on: http://localhost:${port}`))
