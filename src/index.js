@@ -2,6 +2,7 @@ const express = require('express');
 const path = require('path');
 const { createServer } = require('http');
 const { Server } = require('socket.io');
+const { log } = require('console');
 //import * as url from 'url';
 
 const port = 3000;
@@ -17,8 +18,11 @@ app.get('/', (req, res) =>{
 
 
 io.on('connection',(socket) =>{
-
-    console.log(socket.id);
+    //console.log('Clients connected: '+ io.engine.clientsCount);
+    //console.log('ID del socket connected:',socket.id);
+    socket.conn.once('upgrade', () =>{
+        console.log('Hemos pasado de http Long-Polling a', socket.conn.transport.name);
+    })
 })
 
 httpServer.listen(port, () => console.log(`Listening on: http://localhost:${port}`))
