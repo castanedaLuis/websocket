@@ -4,21 +4,3 @@
 
 const socket = io();
 
-
-const send = document.querySelector('#send');
-const disconnect = document.querySelector('#disconnect');
-const connect = document.querySelector('#connect');
-
-
-send.addEventListener('click',() =>{
-        socket.volatile.emit('is connected',"Esta conectado.")
-    
-});
-
-disconnect.addEventListener('click',() =>{
-    socket.disconnect();
-});
-
-connect.addEventListener('click',() =>{
-    socket.connect();
-});
