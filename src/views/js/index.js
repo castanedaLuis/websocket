@@ -2,49 +2,47 @@
 //evento once --> Se emite sola vez. Sin importar si el evento se emite varias veces.
 //evento off --> Se usa para dejar de escuchar un evento, sin importar que este se siga emitiendo.
 
-const socket = io();
+//const socket = io();  ---> io() es el namespace por defecto
 
-// Selecciono mis 3 botones que me permitirán conectarme a las salas
-const connectRoom1 = document.querySelector("#connectRoom1");
-const connectRoom2 = document.querySelector("#connectRoom2");
-const connectRoom3 = document.querySelector("#connectRoom3");
+const user = prompt('Escribe tu usuario');
+const profes = ['Raul', 'Juan DC', 'Castañeda'];
 
-// Eventos para que al hacer click me conecte a las salas
+let socketNamespace, group;
 
-connectRoom1.addEventListener("click", () => {
-    socket.emit("connect to room", "room1");
-});
+const chat = document.querySelector('#chat');
+const namespace = document.querySelector('#namespace');
 
-connectRoom2.addEventListener("click", () => {
-    socket.emit("connect to room", "room2");
-});
+if(profes.includes(user)){
+    socketNamespace = io("/teachers");
+    group = "teachers"
+}else{
+    socketNamespace = io("/students");
+    group = "students"
+}
 
-connectRoom3.addEventListener("click", () => {
-    socket.emit("connect to room", "room3");
-});
+socketNamespace.on('connect', () =>{
+    namespace.textContent = group;
+})
 
-// Enviar mensaje
+//Programando la lógica de envío de mensajes
 
-const sendMessage = document.querySelector("#sendMessage");
+const btnSendMessage  = document.querySelector('#sendMessage');
+btnSendMessage.addEventListener('click', () =>{
 
-sendMessage.addEventListener("click", () => {
-
-    const message = prompt("Escribe tu mensaje:");
-
-    socket.emit("message", message);
-
-});
-
-// Recibir el evento del mensaje
-
-socket.on("send message", data => {
-
-    const { room } = data;
-    const { message } = data;
-
-    const li = document.createElement("li");
-    li.textContent = message;
-
-document.querySelector(`#${room}`).append(li);
+    const message = prompt('¿Cúal es tu mensaje?');
+    socketNamespace.emit('send message', {
+        message,
+        user
+    })
 
 });
+
+
+socketNamespace.on('message', messageData =>{
+
+        const { user, message } = messageData;
+        const li = document.createElement('li');
+        li.textContent = `${user} : ${message}`;
+        chat.append(li);
+});
+

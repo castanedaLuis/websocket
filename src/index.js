@@ -14,46 +14,27 @@ app.get('/', (req, res) =>{
     res.sendFile(__dirname + '/views/index.html');
 });
 
-io.on('connection',(socket) =>{
+const teachers = io.of("teachers");  //namespace 
+const studenst = io.of("students");
 
-    socket.connectedRoom = "";
+teachers.on('connection', socket =>{
+    console.log(socket.id + "Se ha conectado a una sala de profesores");
 
-    socket.on("connect to room", room => {
-
-        socket.leave(socket.connectedRoom);
-
-        switch (room) {
-
-            case "room1":
-                socket.join("room1");
-                socket.connectedRoom = "room1";
-                break;
-
-            case "room2":
-                socket.join("room2");
-                socket.connectedRoom = "room2";
-                break;
-
-            case "room3":
-                socket.join("room3");
-                socket.connectedRoom = "room3";
-                break;
-
-        }
-
+    //cachamos el evento que nos manda el front y emitimos la data por el evento message
+    socket.on('send message', data =>{
+        teachers.emit('message',data);
     });
 
-    socket.on("message", message => {
+});
 
-        const room = socket.connectedRoom;
+studenst.on('connection', socket =>{
+    console.log(socket.id + "Se ha conectado a una sala de estudiantes");
 
-        io.to(room).emit("send message", {
-            message,
-            room
-        });
-
+    //cachamos el evento que nos manda el front y emitimos la data por el evento message
+    socket.on('send message', data =>{
+        studenst.emit('message',data);
     });
-
+    
 });
 
 httpServer.listen(port, () => console.log(`Listening on: http://localhost:${port}`));
