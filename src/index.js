@@ -14,27 +14,11 @@ app.get('/', (req, res) =>{
     res.sendFile(__dirname + '/views/index.html');
 });
 
-const teachers = io.of("teachers");  //namespace 
-const studenst = io.of("students");
+io.on("connection", socket =>{
 
-teachers.on('connection', socket =>{
-    console.log(socket.id + "Se ha conectado a una sala de profesores");
-
-    //cachamos el evento que nos manda el front y emitimos la data por el evento message
-    socket.on('send message', data =>{
-        teachers.emit('message',data);
+    socket.on('is connected', msg =>{
+        console.log(msg);
     });
-
-});
-
-studenst.on('connection', socket =>{
-    console.log(socket.id + "Se ha conectado a una sala de estudiantes");
-
-    //cachamos el evento que nos manda el front y emitimos la data por el evento message
-    socket.on('send message', data =>{
-        studenst.emit('message',data);
-    });
-    
 });
 
 httpServer.listen(port, () => console.log(`Listening on: http://localhost:${port}`));
